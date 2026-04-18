@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jamal Leak Hub — OSINT Search</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Rajdhani:wght@300;400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #D4A017; --gold2: #F0C040; --black: #000;
+    --dark: #080808; --dark2: #0F0F0F; --dark3: #161616;
+    --border: rgba(212,160,23,0.15); --glow: rgba(212,160,23,0.3);
+    --red: #FF2244; --green: #00FF88; --pink: #EB459E;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--black); color:#e8e8e8; font-family:'Rajdhani',sans-serif; min-height:100vh; overflow-x:hidden; }
+
+  /* BG GRID */
+  body::before {
+    content:''; position:fixed; inset:0; z-index:0;
+    background-image:
+      linear-gradient(rgba(212,160,23,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(212,160,23,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events:none;
+  }
+  body::after {
+    content:''; position:fixed; inset:0; z-index:0;
+    background:
+      radial-gradient(ellipse 70% 50% at 50% 0%, rgba(212,160,23,0.07) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 50% at 100% 100%, rgba(235,69,158,0.04) 0%, transparent 50%);
+    pointer-events:none;
+  }
+
+  /* SCANLINE */
+  .scanline {
+    position:fixed; top:0; left:0; right:0; height:2px;
+    background:linear-gradient(90deg, transparent, rgba(212,160,23,0.6), transparent);
+    animation:scan 4s linear infinite;
+    z-index:10; pointer-events:none;
+  }
+  @keyframes scan { 0%{top:-2px} 100%{top:100vh} }
+
+  /* HERO */
+  .hero {
+    position:relative; z-index:1;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    min-height:100vh;
+    padding:40px 20px;
+    text-align:center;
+  }
+
+  /* LOGO */
+  .logo-wrap {
+    margin-bottom:32px;
+    animation: logoIn 1.2s cubic-bezier(.16,1,.3,1) both;
+  }
+  @keyframes logoIn { from{opacity:0;transform:scale(.7) translateY(-20px)} to{opacity:1;transform:scale(1) translateY(0)} }
+
+  .logo-trident {
+    font-size:80px;
+    display:block;
+    filter:drop-shadow(0 0 30px rgba(212,160,23,0.6)) drop-shadow(0 0 60px rgba(212,160,23,0.3));
+    animation:tridentPulse 3s ease-in-out infinite;
+    line-height:1;
+  }
+  @keyframes tridentPulse {
+    0%,100%{ filter:drop-shadow(0 0 20px rgba(212,160,23,0.5)) drop-shadow(0 0 40px rgba(212,160,23,0.2)); }
+    50%{ filter:drop-shadow(0 0 50px rgba(212,160,23,0.9)) drop-shadow(0 0 100px rgba(212,160,23,0.4)) drop-shadow(0 0 160px rgba(212,160,23,0.15)); }
+  }
+
+  h1 {
+    font-family:'Cinzel Decorative',cursive;
+    font-size:clamp(32px,8vw,72px);
+    background:linear-gradient(135deg, #C8960C 0%, #F0C040 40%, #D4A017 60%, #A87810 100%);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+    line-height:1.1; margin-bottom:8px;
+    animation:fadeDown .8s .3s ease both;
+    text-shadow:none;
+    filter:drop-shadow(0 0 30px rgba(212,160,23,0.4));
+  }
+  @keyframes fadeDown { from{opacity:0;transform:translateY(-20px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes fadeUp   { from{opacity:0;transform:translateY(20px)}  to{opacity:1;transform:translateY(0)} }
+
+  .tagline {
+    color:#444; font-size:13px; letter-spacing:5px; text-transform:uppercase;
+    font-weight:300; margin-bottom:48px;
+    animation:fadeDown .8s .5s ease both;
+  }
+
+  /* SEARCH BOX */
+  .search-container {
+    width:100%; max-width:680px;
+    animation:fadeUp .8s .6s ease both;
+    position:relative;
+  }
+
+  .search-box {
+    position:relative;
+    background:rgba(0,0,0,0.7);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:4px;
+    backdrop-filter:blur(20px);
+    box-shadow:0 0 0 1px rgba(0,0,0,0.5), inset 0 1px 0 rgba(212,160,23,0.06);
+    transition:border-color .3s, box-shadow .3s;
+  }
+
+  .search-box.focused {
+    border-color:rgba(212,160,23,0.5);
+    box-shadow:0 0 0 1px rgba(0,0,0,0.5), 0 0 40px rgba(212,160,23,0.12), inset 0 1px 0 rgba(212,160,23,0.06);
+  }
+
+  .search-inner {
+    display:flex; align-items:center; gap:8px;
+    padding:10px 16px;
+  }
+
+  .search-icon { font-size:20px; opacity:.5; flex-shrink:0; }
+
+  .search-input {
+    flex:1; background:transparent; border:none; outline:none;
+    color:#e8e8e8; font-family:'Share Tech Mono',monospace; font-size:15px;
+    caret-color:var(--gold);
+  }
+  .search-input::placeholder { color:#333; }
+
+  .search-btn {
+    padding:10px 24px;
+    background:linear-gradient(135deg, #9A6C05, #D4A017);
+    border:none; border-radius:8px;
+    color:#000; font-family:'Rajdhani',sans-serif; font-weight:700;
+    font-size:13px; letter-spacing:2px; text-transform:uppercase;
+    cursor:pointer; transition:all .2s; flex-shrink:0;
+    box-shadow:0 2px 12px rgba(212,160,23,0.3);
+  }
+  .search-btn:hover { background:linear-gradient(135deg, #B07A10, #F0C040); box-shadow:0 4px 20px rgba(212,160,23,0.5); transform:translateY(-1px); }
+  .search-btn:active { transform:translateY(0); }
+
+  /* CHIPS */
+  .chips {
+    display:flex; flex-wrap:wrap; gap:8px; justify-content:center;
+    margin-top:20px;
+    animation:fadeUp .8s .8s ease both;
+  }
+
+  .chip {
+    padding:6px 16px;
+    background:rgba(0,0,0,0.5);
+    border:1px solid var(--border);
+    border-radius:20px;
+    color:#555; font-size:12px; letter-spacing:1px; text-transform:uppercase;
+    cursor:pointer; transition:all .2s;
+    font-family:'Rajdhani',sans-serif; font-weight:600;
+  }
+  .chip:hover { border-color:var(--gold); color:var(--gold); background:rgba(212,160,23,0.06); }
+
+  /* RESULTS */
+  .results {
+    position:relative; z-index:1;
+    max-width:900px; margin:0 auto;
+    padding:0 20px 80px;
+    display:none;
+  }
+
+  .results-header {
+    display:flex; justify-content:space-between; align-items:center;
+    padding:16px 0 20px;
+    border-bottom:1px solid var(--border);
+    margin-bottom:20px;
+  }
+
+  .results-title {
+    font-family:'Cinzel Decorative',cursive;
+    font-size:14px; color:var(--gold); letter-spacing:1px;
+  }
+
+  .results-count-badge {
+    background:rgba(212,160,23,0.1);
+    border:1px solid rgba(212,160,23,0.3);
+    border-radius:4px;
+    padding:4px 12px;
+    color:var(--gold); font-size:12px;
+    font-family:'Share Tech Mono',monospace;
+  }
+
+  /* RESULT CARD */
+  .result-card {
+    background:var(--dark2);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:20px 24px;
+    margin-bottom:12px;
+    transition:all .2s;
+    animation:cardIn .4s ease both;
+    cursor:default;
+    position:relative;
+    overflow:hidden;
+  }
+
+  .result-card::before {
+    content:'';
+    position:absolute; left:0; top:0; bottom:0; width:3px;
+    background:linear-gradient(180deg, var(--gold), transparent);
+  }
+
+  @keyframes cardIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+  .result-card:hover {
+    border-color:rgba(212,160,23,0.35);
+    box-shadow:0 4px 24px rgba(212,160,23,0.08);
+    transform:translateX(4px);
+  }
+
+  .card-name {
+    font-family:'Cinzel Decorative',cursive;
+    font-size:15px; color:var(--gold2);
+    margin-bottom:14px;
+    display:flex; align-items:center; gap:10px;
+  }
+
+  .card-name .badge {
+    font-family:'Rajdhani',sans-serif;
+    font-size:10px; font-weight:700;
+    padding:2px 8px; border-radius:3px;
+    letter-spacing:1px; text-transform:uppercase;
+  }
+  .badge-m { background:rgba(78,154,241,0.15); color:#4E9AF1; border:1px solid rgba(78,154,241,0.3); }
+  .badge-f { background:rgba(235,69,158,0.15); color:var(--pink); border:1px solid rgba(235,69,158,0.3); }
+
+  .card-fields {
+    display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+    gap:8px 24px;
+  }
+
+  .card-field {
+    display:flex; align-items:flex-start; gap:8px;
+    font-size:13px;
+  }
+
+  .field-icon { opacity:.5; flex-shrink:0; width:16px; text-align:center; }
+  .field-val { color:#ccc; font-family:'Share Tech Mono',monospace; word-break:break-all; }
+  .field-val.gold { color:var(--gold); }
+  .field-val.blue { color:#4E9AF1; }
+  .field-val.green { color:var(--green); }
+  .field-val.empty { color:#333; font-style:italic; }
+
+  /* LOADING */
+  .search-loading {
+    display:none; position:fixed; inset:0; z-index:50;
+    background:rgba(0,0,0,0.9);
+    flex-direction:column; align-items:center; justify-content:center;
+    gap:24px;
+  }
+  .search-loading.active { display:flex; }
+
+  .loading-ring {
+    width:60px; height:60px;
+    border:2px solid rgba(212,160,23,0.1);
+    border-top-color:var(--gold);
+    border-radius:50%;
+    animation:spin 1s linear infinite;
+  }
+  @keyframes spin { to{transform:rotate(360deg)} }
+
+  .loading-text {
+    font-family:'Share Tech Mono',monospace;
+    color:var(--gold); font-size:13px;
+    letter-spacing:3px; text-transform:uppercase;
+    animation:blink 1s infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+  /* HIGHLIGHT */
+  .hl { background:rgba(212,160,23,0.2); color:var(--gold2); border-radius:2px; padding:0 2px; }
+
+  /* NO RESULTS */
+  .no-results {
+    text-align:center; padding:80px 0;
+    color:#333;
+  }
+  .no-results .icon { font-size:60px; margin-bottom:16px; opacity:.3; }
+  .no-results p { font-size:13px; letter-spacing:3px; text-transform:uppercase; }
+
+  /* FOOTER */
+  .footer {
+    position:fixed; bottom:0; left:0; right:0; z-index:5;
+    padding:12px 32px;
+    background:rgba(0,0,0,0.8); backdrop-filter:blur(10px);
+    border-top:1px solid var(--border);
+    display:flex; justify-content:space-between; align-items:center;
+    font-size:12px; color:#333; letter-spacing:2px;
+  }
+  .footer span { color:var(--gold); }
+
+  @media(max-width:600px) {
+    .search-inner { flex-wrap:wrap; }
+    .search-btn { width:100%; margin-top:4px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="scanline"></div>
+
+<!-- LOADING OVERLAY -->
+<div class="search-loading" id="loading">
+  <div class="loading-ring"></div>
+  <div class="loading-text">Recherche en cours...</div>
+</div>
+
+<!-- HERO -->
+<div class="hero" id="heroSection">
+  <div class="logo-wrap">
+    <span class="logo-trident">🔱</span>
+  </div>
+
+  <h1>Jamal Leak Hub</h1>
+  <p class="tagline">OSINT Intelligence Platform</p>
+
+  <div class="search-container">
+    <div class="search-box" id="searchBox">
+      <div class="search-inner">
+        <span class="search-icon">🔍</span>
+        <input
+          class="search-input"
+          id="mainInput"
+          type="text"
+          placeholder="Nom, email, téléphone, ville, pseudo..."
+          autocomplete="off"
+          spellcheck="false"
+          onkeydown="if(event.key==='Enter') doSearch()"
+          onfocus="document.getElementById('searchBox').classList.add('focused')"
+          onblur="document.getElementById('searchBox').classList.remove('focused')"
+        />
+        <button class="search-btn" onclick="doSearch()">Search</button>
+      </div>
+    </div>
+
+    <div class="chips">
+      <span class="chip" onclick="setQuery('email')">📧 Email</span>
+      <span class="chip" onclick="setQuery('telephone')">📞 Téléphone</span>
+      <span class="chip" onclick="setQuery('ville')">📍 Ville</span>
+      <span class="chip" onclick="setQuery('code postal')">🔢 Code postal</span>
+      <span class="chip" onclick="setQuery('pseudo')">👤 Pseudo</span>
+    </div>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div class="results" id="resultsSection">
+  <div class="results-header">
+    <span class="results-title">🔍 Résultats</span>
+    <span class="results-count-badge" id="resultsCount">0 résultats</span>
+  </div>
+  <div id="resultsList"></div>
+  <div id="paginationBar" style="display:flex;justify-content:center;gap:8px;margin-top:32px;flex-wrap:wrap"></div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <span>🔱 Jamal Leak Hub</span>
+  <span>discord.gg/<span>AUhbYah7Ue</span></span>
+  <span>OSINT v3.0</span>
+</div>
+
+<script>
+let currentPage = 1, totalResults = 0, lastQuery = '';
+const PAGE_SIZE = 15;
+
+async function doSearch(page = 1) {
+  const q = document.getElementById('mainInput').value.trim();
+  if (!q || q.length < 2) return;
+  lastQuery = q; currentPage = page;
+
+  document.getElementById('loading').classList.add('active');
+
+  try {
+    const r = await fetch('/api/search', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query: q, limit: PAGE_SIZE, offset: (page - 1) * PAGE_SIZE })
+    }).then(r => r.json());
+
+    totalResults = r.total || 0;
+    document.getElementById('loading').classList.remove('active');
+    renderResults(r.results || [], q);
+  } catch(e) {
+    document.getElementById('loading').classList.remove('active');
+    renderResults([], q, true);
+  }
+}
+
+function renderResults(rows, query, error = false) {
+  const hero = document.getElementById('heroSection');
+  const sect = document.getElementById('resultsSection');
+  const list = document.getElementById('resultsList');
+  const pag  = document.getElementById('paginationBar');
+  const cnt  = document.getElementById('resultsCount');
+
+  // Shrink hero
+  hero.style.minHeight = '180px';
+  hero.style.paddingTop = '80px';
+  hero.style.paddingBottom = '0';
+  sect.style.display = 'block';
+
+  cnt.textContent = `${totalResults.toLocaleString('fr-FR')} résultat${totalResults !== 1 ? 's' : ''}`;
+
+  if (error) {
+    list.innerHTML = `<div class="no-results"><div class="icon">❌</div><p>Erreur de connexion au serveur</p></div>`;
+    return;
+  }
+
+  if (!rows.length) {
+    list.innerHTML = `<div class="no-results"><div class="icon">🔍</div><p>Aucun résultat pour "${query}"</p></div>`;
+    pag.innerHTML = '';
+    return;
+  }
+
+  const hl = text => {
+    if (!text) return '<span class="field-val empty">—</span>';
+    const s = String(text);
+    const re = new RegExp(query.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'), 'gi');
+    return `<span class="field-val">${s.replace(re, m => `<span class="hl">${m}</span>`)}</span>`;
+  };
+
+  list.innerHTML = rows.map((r, i) => {
+    const name = r.fullname || [r.firstname, r.lastname].filter(Boolean).join(' ') || '—';
+    const g = (r.genre || '').toLowerCase();
+    let badge = '';
+    if (['m','male','h','homme'].includes(g)) badge = '<span class="badge badge-m">M</span>';
+    else if (['f','female','femme','féminin'].includes(g)) badge = '<span class="badge badge-f">F</span>';
+
+    const delay = i * 40;
+    return `
+      <div class="result-card" style="animation-delay:${delay}ms">
+        <div class="card-name">${hl(name.toUpperCase())} ${badge}</div>
+        <div class="card-fields">
+          ${r.email    ? `<div class="card-field"><span class="field-icon">📧</span>${hl(r.email)}</div>` : ''}
+          ${r.phone    ? `<div class="card-field"><span class="field-icon">📞</span>${hl(r.phone)}</div>` : ''}
+          ${r.address  ? `<div class="card-field"><span class="field-icon">📍</span>${hl(r.address)}</div>` : ''}
+          ${r.city     ? `<div class="card-field"><span class="field-icon">🏙️</span>${hl(r.city)}${r.postal_code ? ` <span style="color:#555">${r.postal_code}</span>` : ''}</div>` : ''}
+          ${r.country  ? `<div class="card-field"><span class="field-icon">🌍</span>${hl(r.country)}</div>` : ''}
+          ${r.birthdate? `<div class="card-field"><span class="field-icon">🎂</span><span class="field-val">${r.birthdate}</span></div>` : ''}
+          ${r.username ? `<div class="card-field"><span class="field-icon">👤</span>${hl(r.username)}</div>` : ''}
+          ${r.organisme? `<div class="card-field"><span class="field-icon">🏢</span>${hl(r.organisme)}</div>` : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  // Pagination
+  const totalPages = Math.ceil(totalResults / PAGE_SIZE);
+  let pagHtml = '';
+  if (totalPages > 1) {
+    const btnClass = 'style="padding:8px 16px;background:rgba(0,0,0,0.5);border:1px solid rgba(212,160,23,0.15);border-radius:4px;color:#555;font-family:\'Share Tech Mono\',monospace;font-size:12px;cursor:pointer;transition:all .15s" onmouseover="this.style.borderColor=\'var(--gold)\';this.style.color=\'var(--gold)\'" onmouseout="this.style.borderColor=\'rgba(212,160,23,0.15)\';this.style.color=\'#555\'"';
+    if (currentPage > 1) pagHtml += `<button ${btnClass} onclick="doSearch(${currentPage-1})">‹ Préc</button>`;
+    const s = Math.max(1, currentPage - 2), e = Math.min(totalPages, currentPage + 2);
+    for (let p = s; p <= e; p++) {
+      const active = p === currentPage ? 'border-color:var(--gold);color:var(--gold);background:rgba(212,160,23,0.08)' : '';
+      pagHtml += `<button style="padding:8px 14px;background:rgba(0,0,0,0.5);border:1px solid rgba(212,160,23,0.15);border-radius:4px;${active};font-family:'Share Tech Mono',monospace;font-size:12px;cursor:pointer;color:${p===currentPage?'var(--gold)':'#555'}" onclick="doSearch(${p})">${p}</button>`;
+    }
+    if (currentPage < totalPages) pagHtml += `<button ${btnClass} onclick="doSearch(${currentPage+1})">Suiv ›</button>`;
+  }
+  pag.innerHTML = pagHtml;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function setQuery(type) {
+  document.getElementById('mainInput').placeholder = `Recherche par ${type}...`;
+  document.getElementById('mainInput').focus();
+}
+</script>
+</body>
+</html>
