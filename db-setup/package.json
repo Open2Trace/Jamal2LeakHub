@@ -1,0 +1,13 @@
+{
+  "name": "jlh-db-setup",
+  "version": "1.0.0",
+  "description": "Import CSV chunks into SQLite for Jamal Leak Hub",
+  "main": "import.js",
+  "scripts": {
+    "import": "node import.js ./data",
+    "search-test": "node search-test.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^9.4.3"
+  }
+}
