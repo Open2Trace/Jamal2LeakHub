@@ -1,7 +1,7 @@
 {
-  "token": "TON_TOKEN_BOT_ICI",
-  "guildId": "TON_GUILD_ID_ICI",
-  "clientId": "TON_CLIENT_ID_ICI",
+  "token": "MTQ5NDk1NTIyODIzODE4NDUzMA.GiTl-x.0LuMYyDt2bwHNqczsJzT2L1rtYgvXlUAad3_eY",
+  "guildId": "1494944366341521609",
+  "clientId": "1494955228238184530",
   "groq_api_key": "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",
   "dashboardPort": 3000,
   "searchPort": 3001,
