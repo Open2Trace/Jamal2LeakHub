@@ -2,7 +2,7 @@
   "token": "TON_TOKEN_BOT_ICI",
   "guildId": "TON_GUILD_ID_ICI",
   "clientId": "TON_CLIENT_ID_ICI",
-  "anthropicKey": "TON_ANTHROPIC_API_KEY_ICI",
+  "groq_api_key": "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",
   "dashboardPort": 3000,
   "searchPort": 3001,
   "dashboardSecret": "CHANGE_MOI_SECRET_JWT"
