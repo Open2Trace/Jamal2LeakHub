@@ -1,14 +1,7 @@
-app = "jamal2leakhuubb"  # remplace par le nom Fly que tu choisis
+app = "jamal2leakhuubb"
 
 [build]
   dockerfile = "Dockerfile"
 
 [env]
   NODE_ENV = "production"
-
-[http_service]
-  internal_port = 3000
-  force_https = true
-  auto_stop_machines = true
-  auto_start_machines = true
-  min_machines_running = 0
