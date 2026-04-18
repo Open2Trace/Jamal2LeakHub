@@ -1,0 +1,7 @@
+node_modules/
+bot/config.json
+db-setup/personnes.db
+db-setup/data/
+*.log
+.env
+.DS_Store
