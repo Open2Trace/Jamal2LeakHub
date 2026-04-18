@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jamal Leak Hub — Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Rajdhani:wght@300;400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #D4A017;
+    --gold2: #F0C040;
+    --gold-dim: #7A5C0A;
+    --black: #000000;
+    --dark: #080808;
+    --dark2: #0F0F0F;
+    --dark3: #181818;
+    --border: rgba(212,160,23,0.18);
+    --glow: rgba(212,160,23,0.35);
+    --red: #FF2244;
+    --green: #00FF88;
+    --pink: #EB459E;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+  
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: #e8e8e8;
+    font-family: 'Rajdhani', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── ANIMATED BG ───────────────────────────────────────── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0;
+    background: 
+      radial-gradient(ellipse 80% 60% at 50% -10%, rgba(212,160,23,0.08) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 40% at 90% 90%, rgba(212,160,23,0.04) 0%, transparent 60%),
+      radial-gradient(ellipse 30% 30% at 10% 80%, rgba(235,69,158,0.03) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  /* ── PARTICLES ─────────────────────────────────────────── */
+  #particles {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  }
+  .particle {
+    position: absolute;
+    width: 2px; height: 2px;
+    background: var(--gold);
+    border-radius: 50%;
+    animation: floatParticle linear infinite;
+    opacity: 0;
+  }
+  @keyframes floatParticle {
+    0%   { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+    10%  { opacity: 0.6; }
+    90%  { opacity: 0.3; }
+    100% { transform: translateY(-100px) rotate(720deg); opacity: 0; }
+  }
+
+  /* ── NAV ───────────────────────────────────────────────── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    height: 64px;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 32px;
+  }
+
+  .nav-logo {
+    display: flex; align-items: center; gap: 14px;
+    font-family: 'Cinzel Decorative', cursive;
+    font-size: 16px;
+    color: var(--gold);
+    text-decoration: none;
+    letter-spacing: 1px;
+  }
+
+  .logo-trident {
+    font-size: 26px;
+    filter: drop-shadow(0 0 8px var(--gold));
+    animation: pulse 3s ease-in-out infinite;
+  }
+
+  @keyframes pulse { 0%,100%{ filter: drop-shadow(0 0 6px var(--gold)); } 50%{ filter: drop-shadow(0 0 18px var(--gold2)); } }
+
+  .nav-links {
+    display: flex; gap: 8px;
+  }
+
+  .nav-link {
+    padding: 6px 18px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: #aaa;
+    text-decoration: none;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: all .2s;
+    cursor: pointer;
+  }
+
+  .nav-link:hover, .nav-link.active {
+    border-color: var(--gold);
+    color: var(--gold);
+    background: rgba(212,160,23,0.06);
+    box-shadow: 0 0 12px rgba(212,160,23,0.15);
+  }
+
+  /* ── MAIN ──────────────────────────────────────────────── */
+  main {
+    position: relative; z-index: 1;
+    padding: 96px 32px 64px;
+    max-width: 1300px;
+    margin: 0 auto;
+  }
+
+  /* ── HEADER ────────────────────────────────────────────── */
+  .header {
+    text-align: center;
+    margin-bottom: 60px;
+    animation: fadeDown .8s ease both;
+  }
+
+  @keyframes fadeDown { from{ opacity:0; transform:translateY(-30px); } to{ opacity:1; transform:translateY(0); } }
+  @keyframes fadeUp   { from{ opacity:0; transform:translateY(30px);  } to{ opacity:1; transform:translateY(0); } }
+  @keyframes fadeIn   { from{ opacity:0; } to{ opacity:1; } }
+  @keyframes slideIn  { from{ opacity:0; transform:translateX(-20px); } to{ opacity:1; transform:translateX(0); } }
+
+  .header h1 {
+    font-family: 'Cinzel Decorative', cursive;
+    font-size: clamp(28px, 5vw, 52px);
+    color: var(--gold);
+    line-height: 1.2;
+    text-shadow: 0 0 40px rgba(212,160,23,0.4), 0 0 80px rgba(212,160,23,0.15);
+    margin-bottom: 12px;
+  }
+
+  .header-sub {
+    color: #666;
+    font-size: 15px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    font-weight: 300;
+  }
+
+  .gold-line {
+    width: 120px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 20px auto;
+    box-shadow: 0 0 8px var(--gold);
+  }
+
+  /* ── STAT CARDS ────────────────────────────────────────── */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-bottom: 48px;
+    animation: fadeUp .8s .2s ease both;
+  }
+
+  .stat-card {
+    background: var(--dark2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+    transition: transform .2s, box-shadow .2s;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 32px rgba(212,160,23,0.12);
+    border-color: rgba(212,160,23,0.4);
+  }
+
+  .stat-card::before {
+    content: '';
+    position: absolute; top:0; left:0; right:0; height:2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+
+  .stat-icon { font-size: 28px; margin-bottom: 12px; }
+  .stat-value {
+    font-family: 'Cinzel Decorative', cursive;
+    font-size: 30px;
+    color: var(--gold);
+    text-shadow: 0 0 20px rgba(212,160,23,0.3);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .stat-label { color: #666; font-size: 13px; text-transform: uppercase; letter-spacing: 2px; }
+
+  /* ── SEARCH SECTION ────────────────────────────────────── */
+  .section {
+    background: var(--dark2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 32px;
+    margin-bottom: 24px;
+    animation: fadeUp .8s .4s ease both;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .section::before {
+    content: '';
+    position: absolute; top:0; left:0; right:0; height:2px;
+    background: linear-gradient(90deg, transparent 0%, var(--gold) 50%, transparent 100%);
+  }
+
+  .section-title {
+    font-family: 'Cinzel Decorative', cursive;
+    font-size: 16px;
+    color: var(--gold);
+    letter-spacing: 2px;
+    margin-bottom: 24px;
+    display: flex; align-items: center; gap: 12px;
+  }
+
+  .section-title::after {
+    content: '';
+    flex: 1; height: 1px;
+    background: linear-gradient(90deg, var(--border), transparent);
+  }
+
+  /* ── SEARCH BOX ────────────────────────────────────────── */
+  .search-wrapper {
+    display: flex; gap: 12px; margin-bottom: 20px;
+  }
+
+  .search-input {
+    flex: 1;
+    background: var(--dark3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px 20px;
+    color: #e8e8e8;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 14px;
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+  }
+
+  .search-input:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(212,160,23,0.08), 0 0 20px rgba(212,160,23,0.1);
+  }
+
+  .search-input::placeholder { color: #444; }
+
+  .btn {
+    padding: 14px 28px;
+    border: 1px solid var(--gold);
+    border-radius: 6px;
+    background: rgba(212,160,23,0.08);
+    color: var(--gold);
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all .2s;
+    white-space: nowrap;
+  }
+
+  .btn:hover {
+    background: rgba(212,160,23,0.18);
+    box-shadow: 0 0 20px rgba(212,160,23,0.25);
+    transform: translateY(-1px);
+  }
+
+  .btn:active { transform: translateY(0); }
+
+  .btn-red  { border-color: var(--red);  color: var(--red);  background: rgba(255,34,68,0.06); }
+  .btn-red:hover { background: rgba(255,34,68,0.15); box-shadow: 0 0 20px rgba(255,34,68,0.2); }
+
+  /* ── FILTERS ───────────────────────────────────────────── */
+  .filters {
+    display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px;
+  }
+
+  .filter-btn {
+    padding: 6px 14px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: transparent;
+    color: #666;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all .15s;
+  }
+
+  .filter-btn:hover, .filter-btn.active {
+    border-color: var(--gold);
+    color: var(--gold);
+    background: rgba(212,160,23,0.06);
+  }
+
+  /* ── TABLE ─────────────────────────────────────────────── */
+  .results-meta {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 16px;
+    font-size: 13px;
+    color: #555;
+  }
+
+  .results-count { color: var(--gold); font-weight: 700; }
+
+  .table-wrapper { overflow-x: auto; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    font-family: 'Share Tech Mono', monospace;
+  }
+
+  thead th {
+    padding: 12px 16px;
+    text-align: left;
+    color: var(--gold);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+    background: rgba(212,160,23,0.04);
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+    transition: color .2s;
+  }
+
+  thead th:hover { color: var(--gold2); }
+
+  tbody tr {
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+    transition: background .15s;
+    animation: slideIn .3s ease both;
+  }
+
+  tbody tr:hover { background: rgba(212,160,23,0.04); }
+
+  td {
+    padding: 10px 16px;
+    color: #bbb;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  td.highlight { color: var(--gold); }
+  td.email { color: #4E9AF1; }
+  td.phone { color: var(--green); }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .badge-m { background: rgba(78,154,241,0.15); color: #4E9AF1; border: 1px solid rgba(78,154,241,0.3); }
+  .badge-f { background: rgba(235,69,158,0.15); color: var(--pink); border: 1px solid rgba(235,69,158,0.3); }
+  .badge-u { background: rgba(100,100,100,0.15); color: #666; border: 1px solid rgba(100,100,100,0.3); }
+
+  /* ── EMPTY / LOADING ───────────────────────────────────── */
+  .empty-state {
+    text-align: center;
+    padding: 60px 0;
+    color: #333;
+  }
+
+  .empty-state .icon { font-size: 48px; margin-bottom: 16px; opacity: .5; }
+  .empty-state p { font-size: 14px; letter-spacing: 2px; text-transform: uppercase; }
+
+  .loading-dots {
+    display: flex; justify-content: center; gap: 8px; padding: 40px;
+  }
+
+  .dot {
+    width: 8px; height: 8px;
+    background: var(--gold);
+    border-radius: 50%;
+    animation: bounce .6s ease-in-out infinite;
+  }
+
+  .dot:nth-child(2) { animation-delay: .1s; }
+  .dot:nth-child(3) { animation-delay: .2s; }
+
+  @keyframes bounce { 0%,100%{ transform: translateY(0); } 50%{ transform: translateY(-12px); } }
+
+  /* ── PAGINATION ────────────────────────────────────────── */
+  .pagination {
+    display: flex; justify-content: center; gap: 6px; margin-top: 24px;
+    flex-wrap: wrap;
+  }
+
+  .page-btn {
+    width: 36px; height: 36px;
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: transparent;
+    color: #555;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all .15s;
+  }
+
+  .page-btn:hover, .page-btn.active {
+    border-color: var(--gold);
+    color: var(--gold);
+    background: rgba(212,160,23,0.08);
+  }
+
+  /* ── AI SECTION ─────────────────────────────────────────── */
+  .ai-output {
+    background: var(--dark3);
+    border: 1px solid rgba(235,69,158,0.2);
+    border-radius: 6px;
+    padding: 20px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    color: #ccc;
+    min-height: 80px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    position: relative;
+    margin-top: 16px;
+  }
+
+  .ai-output::before {
+    content: '> IA OSINT OUTPUT';
+    position: absolute; top:-10px; left:16px;
+    background: var(--dark2);
+    padding: 0 8px;
+    font-size: 10px;
+    color: var(--pink);
+    letter-spacing: 2px;
+  }
+
+  .typing-cursor {
+    display: inline-block;
+    width: 2px; height: 14px;
+    background: var(--pink);
+    animation: blink .7s infinite;
+    vertical-align: text-bottom;
+    margin-left: 2px;
+  }
+
+  @keyframes blink { 0%,100%{ opacity:1; } 50%{ opacity:0; } }
+
+  /* ── FOOTER ────────────────────────────────────────────── */
+  footer {
+    position: relative; z-index: 1;
+    text-align: center;
+    padding: 32px;
+    color: #222;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border-top: 1px solid rgba(212,160,23,0.06);
+  }
+
+  footer span { color: var(--gold); }
+
+  /* ── RESPONSIVE ────────────────────────────────────────── */
+  @media (max-width: 768px) {
+    main { padding: 80px 16px 40px; }
+    nav { padding: 0 16px; }
+    .nav-links { gap: 4px; }
+    .nav-link { padding: 4px 10px; font-size: 11px; }
+    .search-wrapper { flex-direction: column; }
+    .header h1 { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="particles"></div>
+
+<nav>
+  <a class="nav-logo" href="#">
+    <span class="logo-trident">🔱</span>
+    <span>Jamal Leak Hub</span>
+  </a>
+  <div class="nav-links">
+    <button class="nav-link active" onclick="showTab('dashboard')">Dashboard</button>
+    <button class="nav-link" onclick="showTab('db-search')">🔍 DB Search</button>
+    <button class="nav-link" onclick="showTab('ai-osint')">🤖 IA OSINT</button>
+    <a class="nav-link" href="https://discord.gg/AUhbYah7Ue" target="_blank">Discord</a>
+  </div>
+</nav>
+
+<main>
+
+  <!-- HEADER -->
+  <div class="header">
+    <h1>🔱 JAMAL LEAK HUB</h1>
+    <div class="gold-line"></div>
+    <p class="header-sub">Dashboard & OSINT Intelligence Platform</p>
+  </div>
+
+  <!-- ── TAB: DASHBOARD ─────────────────────────────────── -->
+  <div id="tab-dashboard">
+    <div class="stats-grid" id="statsGrid">
+      <div class="stat-card">
+        <div class="stat-icon">💾</div>
+        <div class="stat-value" id="statDB">—</div>
+        <div class="stat-label">Entrées DB</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">⚡</div>
+        <div class="stat-value" id="statStatus" style="font-size:18px;color:var(--green)">ONLINE</div>
+        <div class="stat-label">Statut Bot</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🔗</div>
+        <div class="stat-value" style="font-size:14px;color:var(--gold)">AUhbYah7Ue</div>
+        <div class="stat-label">Lien Discord</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🔱</div>
+        <div class="stat-value" style="font-size:14px">v3.0</div>
+        <div class="stat-label">Version Bot</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">📋 Accès Rapide</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px">
+        <button class="btn" onclick="showTab('db-search')">🔍 Recherche DB</button>
+        <button class="btn" onclick="showTab('ai-osint')">🤖 IA OSINT</button>
+        <a href="https://discord.gg/AUhbYah7Ue" target="_blank"><button class="btn" style="width:100%">💬 Serveur Discord</button></a>
+        <button class="btn btn-red">⚠ Réinitialiser</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TAB: DB SEARCH ─────────────────────────────────── -->
+  <div id="tab-db-search" style="display:none">
+    <div class="section">
+      <div class="section-title">🔍 Recherche dans la Base de Données</div>
+
+      <div class="search-wrapper">
+        <input
+          class="search-input"
+          id="dbQuery"
+          type="text"
+          placeholder="Nom, email, téléphone, ville, pseudo..."
+          onkeydown="if(event.key==='Enter') doSearch()"
+          autocomplete="off"
+          spellcheck="false"
+        />
+        <button class="btn" onclick="doSearch()">🔍 RECHERCHER</button>
+      </div>
+
+      <div class="filters">
+        <span style="color:#555;font-size:12px;letter-spacing:1px;text-transform:uppercase;padding:6px 4px">Colonnes :</span>
+        <button class="filter-btn active" data-col="all" onclick="toggleFilter(this)">Tout</button>
+        <button class="filter-btn" data-col="fullname" onclick="toggleFilter(this)">Nom</button>
+        <button class="filter-btn" data-col="email" onclick="toggleFilter(this)">Email</button>
+        <button class="filter-btn" data-col="phone" onclick="toggleFilter(this)">Téléphone</button>
+        <button class="filter-btn" data-col="city" onclick="toggleFilter(this)">Ville</button>
+        <button class="filter-btn" data-col="postal_code" onclick="toggleFilter(this)">CP</button>
+        <button class="filter-btn" data-col="username" onclick="toggleFilter(this)">Pseudo</button>
+      </div>
+
+      <div id="resultsContainer">
+        <div class="empty-state">
+          <div class="icon">🔍</div>
+          <p>Lance une recherche pour voir les résultats</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TAB: AI OSINT ──────────────────────────────────── -->
+  <div id="tab-ai-osint" style="display:none">
+    <div class="section">
+      <div class="section-title">🤖 Intelligence Artificielle OSINT</div>
+
+      <div class="search-wrapper">
+        <input
+          class="search-input"
+          id="aiQuery"
+          type="text"
+          placeholder="Ex: Jean Dupont Paris, jean@gmail.com, 192.168.1.1, @pseudo..."
+          onkeydown="if(event.key==='Enter') doAISearch()"
+          autocomplete="off"
+          spellcheck="false"
+        />
+        <button class="btn" style="border-color:var(--pink);color:var(--pink);background:rgba(235,69,158,0.06)" onclick="doAISearch()">🤖 ANALYSER</button>
+      </div>
+
+      <div style="color:#444;font-size:12px;letter-spacing:1px;margin-bottom:16px">
+        L'IA analyse ta cible et propose les meilleures stratégies & outils OSINT.
+      </div>
+
+      <div class="ai-output" id="aiOutput">
+        <span style="color:#333;font-style:italic">En attente d'une requête...</span>
+      </div>
+    </div>
+
+    <div class="section" style="animation-delay:.6s">
+      <div class="section-title">⚡ Requêtes Rapides</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="filter-btn" onclick="setAIQuery('Recherche par nom complet')">👤 Personne</button>
+        <button class="filter-btn" onclick="setAIQuery('Recherche par adresse email')">📧 Email</button>
+        <button class="filter-btn" onclick="setAIQuery('Géolocalisation et infos IP')">🌐 IP/Domain</button>
+        <button class="filter-btn" onclick="setAIQuery('Recherche d\'un pseudo sur les réseaux')">🎮 Pseudo</button>
+        <button class="filter-btn" onclick="setAIQuery('OSINT sur une entreprise')">🏢 Entreprise</button>
+        <button class="filter-btn" onclick="setAIQuery('Numéro de téléphone OSINT')">📞 Téléphone</button>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <span>🔱 Jamal Leak Hub</span> &nbsp;•&nbsp; discord.gg/<span>AUhbYah7Ue</span> &nbsp;•&nbsp; Dashboard v3.0
+</footer>
+
+<script>
+// ── PARTICLES ──────────────────────────────────────────────────────────────
+(function() {
+  const c = document.getElementById('particles');
+  for (let i = 0; i < 25; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.cssText = `left:${Math.random()*100}%;width:${Math.random()*3+1}px;height:${Math.random()*3+1}px;animation-duration:${Math.random()*15+10}s;animation-delay:${Math.random()*10}s;opacity:0`;
+    c.appendChild(p);
+  }
+})();
+
+// ── STATS ──────────────────────────────────────────────────────────────────
+async function loadStats() {
+  try {
+    const r = await fetch('/api/stats').then(r => r.json());
+    animateNumber('statDB', r.dbCount || 0);
+  } catch (e) {}
+}
+
+function animateNumber(id, target) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const duration = 1500, start = Date.now();
+  const tick = () => {
+    const p = Math.min((Date.now() - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - p, 3);
+    el.textContent = Math.floor(ease * target).toLocaleString('fr-FR');
+    if (p < 1) requestAnimationFrame(tick);
+  };
+  tick();
+}
+
+loadStats();
+
+// ── TABS ───────────────────────────────────────────────────────────────────
+function showTab(tab) {
+  document.querySelectorAll('[id^="tab-"]').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+  const el = document.getElementById('tab-' + tab);
+  if (el) el.style.display = '';
+  event?.target?.classList?.add('active');
+}
+
+// ── DB SEARCH ──────────────────────────────────────────────────────────────
+let currentPage = 1, totalResults = 0, lastQuery = '';
+const PAGE_SIZE = 20;
+
+async function doSearch(page = 1) {
+  const query = document.getElementById('dbQuery').value.trim();
+  if (!query) return;
+  lastQuery = query;
+  currentPage = page;
+
+  const container = document.getElementById('resultsContainer');
+  container.innerHTML = `<div class="loading-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
+
+  try {
+    const r = await fetch('/api/search', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query, limit: PAGE_SIZE, offset: (page - 1) * PAGE_SIZE })
+    }).then(r => r.json());
+
+    totalResults = r.total || 0;
+    renderResults(r.results || [], query);
+  } catch (e) {
+    container.innerHTML = `<div class="empty-state"><div class="icon">❌</div><p>Erreur de connexion</p></div>`;
+  }
+}
+
+function renderResults(rows, query) {
+  const container = document.getElementById('resultsContainer');
+  if (!rows.length) {
+    container.innerHTML = `<div class="empty-state"><div class="icon">🔍</div><p>Aucun résultat pour "${query}"</p></div>`;
+    return;
+  }
+
+  const totalPages = Math.ceil(totalResults / PAGE_SIZE);
+  const hl = (text) => {
+    if (!text) return '<span style="color:#333">—</span>';
+    const s = String(text);
+    const re = new RegExp(query.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'), 'gi');
+    return s.replace(re, m => `<span style="background:rgba(212,160,23,0.2);color:var(--gold2)">${m}</span>`);
+  };
+
+  const gendBadge = g => {
+    if (!g) return '<span class="badge badge-u">?</span>';
+    const gl = g.toLowerCase();
+    if (['m','male','h','homme','masculin'].includes(gl)) return '<span class="badge badge-m">M</span>';
+    if (['f','female','femme','féminin'].includes(gl)) return '<span class="badge badge-f">F</span>';
+    return `<span class="badge badge-u">${g}</span>`;
+  };
+
+  let html = `
+    <div class="results-meta">
+      <span>Résultats : <span class="results-count">${totalResults.toLocaleString('fr-FR')}</span></span>
+      <span>Page ${currentPage} / ${totalPages}</span>
+    </div>
+    <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Nom complet</th>
+          <th>Email</th>
+          <th>Téléphone</th>
+          <th>Ville / CP</th>
+          <th>Pays</th>
+          <th>Pseudo</th>
+          <th>Genre</th>
+          <th>Naissance</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  rows.forEach((r, i) => {
+    const n = (currentPage - 1) * PAGE_SIZE + i + 1;
+    html += `
+      <tr>
+        <td style="color:#333">${n}</td>
+        <td class="highlight">${hl(r.fullname || ((r.firstname || '') + ' ' + (r.lastname || '')).trim() || '—')}</td>
+        <td class="email">${hl(r.email)}</td>
+        <td class="phone">${hl(r.phone)}</td>
+        <td>${hl(r.city || '')}${r.postal_code ? ` <span style="color:#555">${r.postal_code}</span>` : ''}</td>
+        <td>${hl(r.country)}</td>
+        <td>${hl(r.username)}</td>
+        <td>${gendBadge(r.genre)}</td>
+        <td style="color:#555">${r.birthdate || '—'}</td>
+      </tr>
+    `;
+  });
+
+  html += `</tbody></table></div>`;
+
+  // Pagination
+  if (totalPages > 1) {
+    html += `<div class="pagination">`;
+    if (currentPage > 1) html += `<button class="page-btn" onclick="doSearch(${currentPage - 1})">‹</button>`;
+    const start = Math.max(1, currentPage - 2);
+    const end   = Math.min(totalPages, currentPage + 2);
+    for (let p = start; p <= end; p++) {
+      html += `<button class="page-btn ${p === currentPage ? 'active' : ''}" onclick="doSearch(${p})">${p}</button>`;
+    }
+    if (currentPage < totalPages) html += `<button class="page-btn" onclick="doSearch(${currentPage + 1})">›</button>`;
+    html += `</div>`;
+  }
+
+  container.innerHTML = html;
+}
+
+// ── AI SEARCH ──────────────────────────────────────────────────────────────
+async function doAISearch() {
+  const q = document.getElementById('aiQuery').value.trim();
+  if (!q) return;
+  const out = document.getElementById('aiOutput');
+  out.innerHTML = '<div class="loading-dots" style="justify-content:flex-start;padding:12px 0"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
+
+  try {
+    const r = await fetch('/api/ai-search', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query: q })
+    }).then(r => r.json());
+
+    typeText(out, r.result || 'Erreur IA');
+  } catch (e) {
+    out.innerHTML = `<span style="color:var(--red)">❌ API non disponible. Configure anthropicKey dans config.json</span>`;
+  }
+}
+
+function typeText(el, text) {
+  el.innerHTML = '';
+  let i = 0;
+  const cursor = document.createElement('span');
+  cursor.className = 'typing-cursor';
+
+  const tick = () => {
+    if (i < text.length) {
+      el.textContent += text[i++];
+      el.appendChild(cursor);
+      el.scrollTop = el.scrollHeight;
+      setTimeout(tick, 8);
+    } else {
+      cursor.remove();
+    }
+  };
+  tick();
+}
+
+function setAIQuery(q) {
+  document.getElementById('aiQuery').value = q;
+  showTab('ai-osint');
+}
+
+function toggleFilter(btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+</script>
+</body>
+  </html>
